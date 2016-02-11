@@ -401,6 +401,9 @@ _S3_LOG_FORMAT = (
 _ICECAST2_LOG_FORMAT = ( _NCSA_EXTENDED_LOG_FORMAT +
     '\s+(?P<session_time>\S+)'
 )
+_JWORG_LOG_FORMAT = (_NCSA_EXTENDED_LOG_FORMAT +
+    '\s+(?P<pageid>.*)'
+)
 
 FORMATS = {
     'common': RegexFormat('common', _COMMON_LOG_FORMAT),
@@ -414,6 +417,7 @@ FORMATS = {
     's3': RegexFormat('s3', _S3_LOG_FORMAT),
     'icecast2': RegexFormat('icecast2', _ICECAST2_LOG_FORMAT),
     'nginx_json': JsonFormat('nginx_json'),
+    'jworg': RegexFormat('jworg', _JWORG_LOG_FORMAT),
 }
 
 ##

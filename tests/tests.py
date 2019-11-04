@@ -649,7 +649,7 @@ def test_amazon_cloudfront_web_parsing():
     assert hits[0]['is_error'] == False
     assert hits[0]['extension'] == u'html'
     assert hits[0]['is_download'] == False
-    assert hits[0]['referrer'] == u'www.displaymyfiles.com'
+    assert hits[0]['referrer'] == u'https://example.com/'
     assert hits[0]['args'] == {'cvar': {1: ['HTTP-method', 'GET']}}
     assert hits[0]['generation_time_milli'] == 1.0
     assert hits[0]['host'] == 'foo'
@@ -662,7 +662,7 @@ def test_amazon_cloudfront_web_parsing():
     assert hits[0]['path'] == u'/view/my/file.html'
     assert hits[0]['is_robot'] == False
     assert hits[0]['full_path'] == u'/view/my/file.html'
-    assert hits[0]['user_agent'] == u'Mozilla/4.0 (compatible; MSIE 5.0b1; Mac_PowerPC)'
+    assert hits[0]['user_agent'] == u'Mozilla/5.0 (Windows; U; Windows NT 6.1; de-DE) AppleWebKit/534.17 (KHTML, like Gecko) Chrome/10.0.649.0 Safari/534.17'
 
     assert len(hits) == 1
 
@@ -892,6 +892,26 @@ def test_custom_log_date_format_option():
     hits = [hit.__dict__ for hit in Recorder.recorders]
 
     assert hits[0]['date'] == datetime.datetime(2012, 2, 10, 16, 42, 7)
+
+def test_static_ignores():
+    """Test static files are ignored."""
+    file_ = 'logs/static_ignores.log'
+
+    import_logs.config.options.custom_w3c_fields = {}
+    Recorder.recorders = []
+    import_logs.parser = import_logs.Parser()
+    import_logs.config.format = None
+    import_logs.config.options.enable_static = False
+    import_logs.config.options.download_extensions = 'txt,doc'  # ensure robots.txt would be imported if not detected as static
+    import_logs.config.options.enable_http_redirects = True
+    import_logs.config.options.enable_http_errors = True
+    import_logs.config.options.replay_tracking = False
+    import_logs.config.options.w3c_time_taken_in_millisecs = False
+    import_logs.parser.parse(file_)
+
+    hits = [hit.args for hit in import_logs.Recorder.recorders]
+
+    assert len(hits) == 1
 
 # UrlHelper tests
 def test_urlhelper_convert_array_args():
